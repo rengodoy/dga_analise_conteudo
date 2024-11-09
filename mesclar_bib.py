@@ -93,7 +93,7 @@ if __name__ == "__main__":
     # Substituir com os caminhos reais dos arquivos
     file1 = "wos.bib"
     file2 = "scopus.bib"
-    output = "referencias_unificadas.bib"
+    output = "referencial_unificado.bib"
     
     stats = merge_bibtex_files(file1, file2, output)
     print(f"Arquivo unificado criado com {stats['total_entries']} referências únicas:")
