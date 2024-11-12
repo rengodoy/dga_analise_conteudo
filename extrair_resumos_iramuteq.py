@@ -8,7 +8,6 @@ import string
 # Carregar stopwords e modelo de Spacy para inglês
 download("stopwords")
 stopwords_en = set(stopwords.words("english"))
-nlp = spacy.load("en_core_web_sm")
 
 # Dicionário de substituições de siglas e expressões para expressões completas e únicas
 substituicoes_siglas = {
@@ -43,6 +42,7 @@ substituicoes_siglas = {
     "smes": "small_mediumsize_enterprise",
     "gnn": "graph_neural_networks",
     "shi": "Singapore Housing Index",
+    #  " data ": " datum ",
 }
 
 # Lista de locuções para serem substituídas com underline
@@ -166,14 +166,6 @@ def remover_stopwords(resumos):
     return resumos
 
 
-# Realizar lematização
-def lematizar_texto(resumos):
-    for resumo in resumos:
-        doc = nlp(resumo[1])
-        resumo[1] = " ".join([token.lemma_ for token in doc])
-    return resumos
-
-
 # Função para remover o possessivo de palavras
 def remover_possessivo(resumos):
     for resumo in resumos:
@@ -186,6 +178,7 @@ def remover_aspas(resumos):
     for resumo in resumos:
         resumo[1] = re.sub(r"[\"']", "", resumo[1])
     return resumos
+
 
 # Função principal para processar o texto
 def processar_texto(arquivo):
@@ -200,9 +193,8 @@ def processar_texto(arquivo):
     resumos = remover_possessivo(resumos)
     resumos = remover_stopwords(resumos)
     resumos = trata_locucoes_substantivas(resumos)
-    resumos = lematizar_texto(resumos)
-    resumos = substituir_siglas(resumos)
     resumos = remover_aspas(resumos)
+    resumos = substituir_siglas(resumos)
 
     return resumos, quantidade_exportado
 
