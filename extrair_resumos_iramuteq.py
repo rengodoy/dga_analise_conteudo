@@ -151,7 +151,7 @@ def trata_locucoes_substantivas(resumos):
 def remover_pontuacao_e_hifen(resumos):
     for resumo in resumos:
         resumo[1] = resumo[1].replace("-", "_")
-        # resumo[1] = resumo[1].translate(str.maketrans('', '', string.punctuation))
+        resumo[1] = resumo[1].translate(str.maketrans("", "", string.punctuation))
         dict_pontuacao = {ord(char): " " for char in string.punctuation}
         resumo[1] = resumo[1].translate(dict_pontuacao)
     return resumos
@@ -174,20 +174,18 @@ def lematizar_texto(resumos):
     return resumos
 
 
-# Ajustar contexto de negação
-def ajustar_negacao(resumos):
-    for resumo in resumos:
-        resumo[1] = re.sub(r"\bnot\s+(\w+)", r"not_\1", resumo[1])
-    return resumos
-
-
 # Função para remover o possessivo de palavras
 def remover_possessivo(resumos):
     for resumo in resumos:
-        # Remove o possessivo "’s" e "'s"
         resumo[1] = re.sub(r"’s\b|\'s\b", "", resumo[1])
     return resumos
 
+
+# Função para remover aspas do texto
+def remover_aspas(resumos):
+    for resumo in resumos:
+        resumo[1] = re.sub(r"[\"']", "", resumo[1])
+    return resumos
 
 # Função principal para processar o texto
 def processar_texto(arquivo):
@@ -199,11 +197,12 @@ def processar_texto(arquivo):
     # Aplicar transformações no texto
 
     resumos = remover_pontuacao_e_hifen(dados_extracao)
+    resumos = remover_possessivo(resumos)
     resumos = remover_stopwords(resumos)
     resumos = trata_locucoes_substantivas(resumos)
     resumos = lematizar_texto(resumos)
-    resumos = ajustar_negacao(resumos)
     resumos = substituir_siglas(resumos)
+    resumos = remover_aspas(resumos)
 
     return resumos, quantidade_exportado
 
@@ -215,10 +214,6 @@ resumos, quantidade_exportado = processar_texto(arquivo_bibtex)
 output_file = "iramuteq_formatado.txt"
 with open(output_file, "w", encoding="utf-8-sig") as f:
     for resumo in resumos:
-        keywords = ""
-        #    for index,keyword in enumerate(resumo[2]):
-        #        keywords += '*keyword' + str(index) + '_' + keyword.strip().replace(" ", "_").lower() + ' '
-        #    cabecalho = '**** *ano_' + resumo[0] + ' ' + keywords + '*artigo_' + str(resumo[3]) + '\n'
         cabecalho = "**** *ano_" + resumo[0] + "\n"
         f.write(cabecalho + resumo[1].replace("\n", " ") + "\n")
 
