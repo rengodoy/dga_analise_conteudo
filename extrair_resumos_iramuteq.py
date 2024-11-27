@@ -1,6 +1,5 @@
 import bibtexparser
 import re
-import spacy
 from nltk.corpus import stopwords
 from nltk import download
 import string
